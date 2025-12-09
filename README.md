@@ -4,6 +4,7 @@ Compare static analysis and code quality metrics of popular PHP frameworks.
 
 ## Frameworks Analyzed
 
+- [bearsunday/BEAR.Package](https://github.com/bearsunday/BEAR.Package) (vendor/bear/* + vendor/ray/*)
 - [cakephp/cakephp](https://github.com/cakephp/cakephp)
 - [codeigniter4/CodeIgniter4](https://github.com/codeigniter4/CodeIgniter4)
 - [laminas/laminas-mvc](https://github.com/laminas/laminas-mvc)

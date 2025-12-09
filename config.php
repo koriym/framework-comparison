@@ -9,6 +9,12 @@
  * - srcDir: Source directory to analyze
  */
 return [
+    'bearsunday' => [
+        'repo' => 'bearsunday/BEAR.Package',
+        'branch' => '1.x', // stable branch
+        'srcDir' => null, // analyzed from vendor/bear/* and vendor/ray/*
+        'vendorDirs' => ['vendor/bear', 'vendor/ray'],
+    ],
     'cakephp' => [
         'repo' => 'cakephp/cakephp',
         'branch' => '5.x', // stable branch

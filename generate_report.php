@@ -12,8 +12,9 @@ $dataDir = __DIR__ . '/reports/data';
 $reposDir = __DIR__ . '/repos';
 
 // Alphabetical order
-$frameworks = ['cakephp', 'codeigniter', 'laminas', 'laravel', 'symfony', 'yii2'];
+$frameworks = ['bearsunday', 'cakephp', 'codeigniter', 'laminas', 'laravel', 'symfony', 'yii2'];
 $displayNames = [
+    'bearsunday' => 'BEAR.Sunday',
     'cakephp' => 'CakePHP',
     'codeigniter' => 'CodeIgniter',
     'laminas' => 'Laminas',
@@ -109,6 +110,14 @@ function getFrameworkVersion(string $reposDir, string $fw): string
     $fwDir = "$reposDir/$fw";
 
     return match ($fw) {
+        'bearsunday' => (function () use ($fwDir) {
+            // Get version from git branch name
+            $branch = trim(shell_exec("git -C $fwDir rev-parse --abbrev-ref HEAD 2>/dev/null") ?: '');
+            if (preg_match('/^(\d+\.\d+)/', $branch, $m)) {
+                return $m[1] . '.x';
+            }
+            return 'unknown';
+        })(),
         'cakephp' => (function () use ($fwDir) {
             $lines = file("$fwDir/VERSION.txt", FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
             return trim(end($lines)) ?: 'unknown';
@@ -321,6 +330,7 @@ $md .= "| Framework | Version | PHP | Analysis Time | First Release | GitHub |\n
 $md .= "|-----------|---------|-----|---------------|---------------|--------|\n";
 
 $frameworkMeta = [
+    'bearsunday' => ['year' => 2015, 'repo' => 'bearsunday/BEAR.Sunday'],
     'cakephp' => ['year' => 2005, 'repo' => 'cakephp/cakephp'],
     'codeigniter' => ['year' => 2006, 'repo' => 'codeigniter4/CodeIgniter4'],
     'laminas' => ['year' => 2006, 'repo' => 'laminas/laminas-mvc'],
@@ -355,6 +365,7 @@ $md .= "\n## Notes\n\n";
 $md .= "- PHPStan and Psalm run at their strictest levels\n";
 $md .= "- Silenced issues = errors hidden via inline annotations or baseline files\n";
 $md .= "- Lower error counts indicate better type safety and static analysis compliance\n";
+$md .= "- BEAR.Sunday: analyzed from BEAR.Package vendor/bear/* and vendor/ray/* packages (core framework only, excluding optional bridge modules)\n";
 $md .= "- Laminas: analyzed 10 core packages (mvc, db, view, form, validator, router, servicemanager, eventmanager, http, session)\n";
 $md .= "- Symfony: analyzed per-component using root autoloader (Psalm: 67 components, Cognitive: 66/67)\n";
 $md .= "- LOC = Lines of Code, LLOC = Logical Lines of Code\n";
