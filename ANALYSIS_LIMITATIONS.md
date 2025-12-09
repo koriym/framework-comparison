@@ -199,20 +199,7 @@ function process(Request $data): Response {
    - 0 errors could mean: perfect types OR no types (can't check)
    - Type coverage reveals the difference
 
-### Expected Results (Estimated)
-
-Based on static analysis errors:
-
-```
-Symfony:     85-90%  (2 PHPStan errors, comprehensive typing)
-BEAR.Sunday: 80-85%  (0 Psalm errors, good typing)
-CakePHP:     75-80%  (18 PHPStan errors)
-Laravel:     40-50%  (11,792 PHPStan errors suggests poor typing)
-Laminas:     30-40%  (Legacy codebase)
-Yii2:        30-40%  (Legacy codebase)
-```
-
-**This would be the most reliable quality metric.**
+**Type Coverage would be the most reliable quality metric** - but it is currently missing from this analysis.
 
 ---
 
