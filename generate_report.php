@@ -170,6 +170,7 @@ foreach ($frameworks as $fw) {
         'phploc' => null,
         'cognitive' => null,
         'silenced' => null,
+        'pdepend' => null,
     ];
 
     // PHPStan
@@ -226,6 +227,19 @@ foreach ($frameworks as $fw) {
     $silencedFile = "$dataDir/silenced_$fw.json";
     if (file_exists($silencedFile)) {
         $data[$fw]['silenced'] = json_decode(file_get_contents($silencedFile), true);
+    }
+
+    // PDepend
+    $pdependFile = "$dataDir/pdepend_$fw.json";
+    if (file_exists($pdependFile)) {
+        $json = json_decode(file_get_contents($pdependFile), true);
+        $packages = $json['packages'] ?? [];
+        $zoneOfPain = array_filter($packages, fn($p) => $p['zoneOfPain'] ?? false);
+
+        $data[$fw]['pdepend'] = [
+            'packages' => count($packages),
+            'zoneOfPain' => count($zoneOfPain),
+        ];
     }
 }
 
@@ -298,6 +312,25 @@ foreach ($frameworks as $fw) {
     );
 }
 
+// PDepend Metrics table
+$md .= "\n## Code Design (PDepend)\n\n";
+$md .= "| Framework | Packages | Zone of Pain |\n";
+$md .= "|-----------|----------|--------------|\n";
+
+foreach ($frameworks as $fw) {
+    $pd = $data[$fw]['pdepend'];
+    if ($pd) {
+        $md .= sprintf(
+            "| %s | %s | %s |\n",
+            $displayNames[$fw],
+            fmt($pd['packages'] ?? null),
+            fmt($pd['zoneOfPain'] ?? null)
+        );
+    } else {
+        $md .= "| " . $displayNames[$fw] . " | - | - |\n";
+    }
+}
+
 // Silenced Issues table
 $md .= "\n## Silenced Issues (Inline Annotations & Baselines)\n\n";
 $md .= "| Framework | @phpstan-ignore | @psalm-suppress | phpcs:ignore | @codeCoverageIgnore | PHPStan Baseline | Psalm Baseline |\n";
@@ -365,6 +398,7 @@ $md .= "\n## Notes\n\n";
 $md .= "- PHPStan and Psalm run at their strictest levels\n";
 $md .= "- Silenced issues = errors hidden via inline annotations or baseline files\n";
 $md .= "- Lower error counts indicate better type safety and static analysis compliance\n";
+$md .= "- Zone of Pain = packages with low Instability (I < 0.3) and low Abstractness (A < 0.3) - hard to change concrete classes\n";
 $md .= "- BEAR.Sunday: analyzed from BEAR.Package vendor/bear/* and vendor/ray/* packages (core framework only, excluding optional bridge modules)\n";
 $md .= "- Laminas: analyzed 10 core packages (mvc, db, view, form, validator, router, servicemanager, eventmanager, http, session)\n";
 $md .= "- Symfony: analyzed per-component using root autoloader (Psalm: 67 components, Cognitive: 66/67)\n";

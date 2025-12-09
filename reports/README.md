@@ -1,6 +1,6 @@
 # PHP Framework Comparison Results
 
-Generated: 2025-12-09 01:44:28
+Generated: 2025-12-09 08:26:32
 
 ## Code Metrics (phploc)
 
@@ -38,6 +38,18 @@ Generated: 2025-12-09 01:44:28
 | Symfony | 2 | 0 | 55425 | 29.4 |
 | Yii2 | 4494 | 38.5 | 3211 | 27.51 |
 
+## Code Design (PDepend)
+
+| Framework | Packages | Zone of Pain |
+|-----------|----------|--------------|
+| BEAR.Sunday | 44 | 13 |
+| CakePHP | 98 | 10 |
+| CodeIgniter | 105 | 3 |
+| Laminas | 113 | 5 |
+| Laravel | 166 | 22 |
+| Symfony | - | - |
+| Yii2 | 37 | 1 |
+
 ## Silenced Issues (Inline Annotations & Baselines)
 
 | Framework | @phpstan-ignore | @psalm-suppress | phpcs:ignore | @codeCoverageIgnore | PHPStan Baseline | Psalm Baseline |
@@ -54,19 +66,20 @@ Generated: 2025-12-09 01:44:28
 
 | Framework | Version | PHP | Analysis Time | First Release | GitHub |
 |-----------|---------|-----|---------------|---------------|--------|
-| BEAR.Sunday | unknown | `8.2+` | 9s | 2015 | [bearsunday/BEAR.Sunday](https://github.com/bearsunday/BEAR.Sunday) |
-| CakePHP | 5.2.10 | `>=8.1` | 20s | 2005 | [cakephp/cakephp](https://github.com/cakephp/cakephp) |
-| CodeIgniter | 4.6.3 | `8.1+` | 24s | 2006 | [codeigniter4/CodeIgniter4](https://github.com/codeigniter4/CodeIgniter4) |
-| Laminas | 3.9.x | - | 1m 3s | 2006 | [laminas/laminas-mvc](https://github.com/laminas/laminas-mvc) |
-| Laravel | 12.41.1 | `8.2+` | 52s | 2011 | [laravel/framework](https://github.com/laravel/framework) |
+| BEAR.Sunday | unknown | `8.2+` | 12s | 2015 | [bearsunday/BEAR.Sunday](https://github.com/bearsunday/BEAR.Sunday) |
+| CakePHP | 5.2.10 | `>=8.1` | 33s | 2005 | [cakephp/cakephp](https://github.com/cakephp/cakephp) |
+| CodeIgniter | 4.6.3 | `8.1+` | 39s | 2006 | [codeigniter4/CodeIgniter4](https://github.com/codeigniter4/CodeIgniter4) |
+| Laminas | 3.9.x | - | 1m 14s | 2006 | [laminas/laminas-mvc](https://github.com/laminas/laminas-mvc) |
+| Laravel | 12.41.1 | `8.2+` | 1m 3s | 2011 | [laravel/framework](https://github.com/laravel/framework) |
 | Symfony | 8.0.2-DEV | `>=8.4` | 6m 58s | 2005 | [symfony/symfony](https://github.com/symfony/symfony) |
-| Yii2 | 2.0.54-dev | `>=7.4` | 21s | 2008 | [yiisoft/yii2](https://github.com/yiisoft/yii2) |
+| Yii2 | 2.0.54-dev | `>=7.4` | 35s | 2008 | [yiisoft/yii2](https://github.com/yiisoft/yii2) |
 
 ## Notes
 
 - PHPStan and Psalm run at their strictest levels
 - Silenced issues = errors hidden via inline annotations or baseline files
 - Lower error counts indicate better type safety and static analysis compliance
+- Zone of Pain = packages with low Instability (I < 0.3) and low Abstractness (A < 0.3) - hard to change concrete classes
 - BEAR.Sunday: analyzed from BEAR.Package vendor/bear/* and vendor/ray/* packages (core framework only, excluding optional bridge modules)
 - Laminas: analyzed 10 core packages (mvc, db, view, form, validator, router, servicemanager, eventmanager, http, session)
 - Symfony: analyzed per-component using root autoloader (Psalm: 67 components, Cognitive: 66/67)

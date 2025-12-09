@@ -10,7 +10,7 @@ if (file_exists($timingFile)) {
     unlink($timingFile);
 }
 
-$checks = ['phpstan', 'psalm', 'phploc', 'cognitive', 'silenced'];
+$checks = ['phpstan', 'psalm', 'phploc', 'cognitive', 'silenced', 'pdepend'];
 
 foreach ($checks as $check) {
     passthru("php " . __DIR__ . "/check_$check/run_all.php");

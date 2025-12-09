@@ -4,17 +4,28 @@ This document explains the limitations of the current framework comparison metri
 
 ## Executive Summary
 
-**Key Finding**: Average-based metrics are fundamentally flawed for framework comparison due to the "mass of simple code" effect.
+**Key Finding**: Nearly all single-value metrics are fundamentally flawed for framework comparison.
 
-**Most Reliable Metrics**:
+**Why Metrics Fail**:
+- **Averages** → Distorted by mass of simple code (getters, setters, DTOs)
+- **Maximums** → Distorted by single outliers
+- **Medians** → Same issue as averages
+
+**Only Relatively Reliable Metric**:
 1. ✅ Static analysis error density (PHPStan/Psalm errors per 1K LOC)
-2. ✅ Maximum cognitive complexity (worst-case scenario)
-3. ✅ Suppression count (technical debt indicator)
+   - Evaluates entire codebase
+   - Not easily gamed by code structure
 
-**Unreliable Metrics**:
-1. ❌ Average method length
-2. ❌ Average cognitive complexity
-3. ❌ Complexity/LLOC (cyclomatic complexity per logical line)
+**Problematic Metrics**:
+1. ❌ Average method length - Mass of 1-line getters
+2. ❌ Average cognitive complexity - Mass of zero-complexity methods
+3. ❌ Maximum complexity - Single outlier effect
+4. ❌ Complexity/LLOC - Distorted by DTOs/exceptions
+
+**What's Missing**:
+- ⚠️ Type Coverage (most important)
+- ⚠️ Percentile distributions (P50, P75, P90, P95, P99)
+- ⚠️ Bucket distributions (how many methods in each complexity range)
 
 ## Problem 1: Average Method Length (Avg Method Length)
 
@@ -113,19 +124,36 @@ Laravel and BEAR.Sunday appear nearly identical (0.07 vs 0.08), suggesting simil
 
 ### What You Should Look At Instead
 
-✅ **Maximum cognitive complexity** - This is reliable:
+⚠️ **Maximum cognitive complexity** - Better than average, but still problematic:
 
 | Framework | Max Cognitive Complexity |
 |-----------|------------------------|
-| BEAR.Sunday | 3.243 | ← Even worst method is simple
+| BEAR.Sunday | 3.243 |
 | Laravel | 7.233 |
 | CakePHP | 8.385 |
 | Yii2 | 8.225 |
 | Laminas | 11.273 |
 | CodeIgniter | 11.814 |
-| Symfony | 14.617 | ← Contains very complex methods
+| Symfony | 14.617 |
 
-**Key insight**: BEAR.Sunday's maximum of 3.243 means even its most complex method is relatively simple. Symfony's 14.617 indicates at least one extremely complex method exists.
+**Why this is also misleading:**
+
+Symfony's 14.617 could mean:
+- **Scenario A**: 1 extremely complex method out of 45,867 (0.002% - not a real problem)
+- **Scenario B**: 500 methods with complexity 10-15 (1% - serious problem)
+
+**You cannot tell which scenario is true from the maximum value alone.**
+
+**What we really need**: P95, P99, and bucket distribution:
+
+```
+Methods with complexity > 10:
+  BEAR.Sunday:  0 methods (0%)      ← Consistently simple
+  Laravel:     23 methods (0.19%)   ← Few complex methods
+  Symfony:    456 methods (1.08%)   ← Many complex methods
+```
+
+This would reveal whether high complexity is an outlier or a systemic issue.
 
 ---
 
@@ -203,7 +231,73 @@ function process(Request $data): Response {
 
 ---
 
-## Reliable Metrics in Current Report
+## Problem 4: Maximum Values (Outlier Effect)
+
+### The Pitfall
+
+**A single outlier distorts the entire picture.**
+
+| Framework | Max Cognitive Complexity | Total Methods |
+|-----------|------------------------|---------------|
+| Symfony | 14.617 | 45,867 |
+| BEAR.Sunday | 3.243 | 1,085 |
+
+### The Question
+
+Does Symfony's 14.617 mean:
+- **1 outlier** among 45,867 methods? (99.998% are fine)
+- **Many complex methods** with the worst being 14.617? (systemic issue)
+
+**We cannot tell from the maximum alone.**
+
+### Why This Matters
+
+If it's **1 outlier**:
+- Not a real quality problem
+- Just one old/legacy method
+- Overall codebase is clean
+
+If it's **many complex methods**:
+- Serious maintainability issue
+- Difficult to refactor
+- High bug risk
+
+### What's Needed
+
+**Percentiles and bucket distribution:**
+
+```
+P95 (95th percentile):
+  - Ignores the top 5% outliers
+  - Shows typical "complex" code
+
+Bucket counts:
+  Complexity 10+:
+    - Symfony: 456 methods (1.08%) → systemic issue
+    - Laravel: 23 methods (0.19%) → few outliers
+    - BEAR.Sunday: 0 methods (0%) → consistently simple
+```
+
+This reveals whether high complexity is exceptional or endemic.
+
+---
+
+## The Fundamental Problem
+
+### All Single-Value Metrics Are Unreliable
+
+| Metric | Distortion |
+|--------|-----------|
+| **Average** | Pulled down by mass of simple code |
+| **Median** | Same issue as average |
+| **Maximum** | Pulled up by single outlier |
+| **Minimum** | Always near zero (meaningless) |
+
+**Truth**: You need the **full distribution** to understand quality.
+
+---
+
+## Relatively Reliable Metrics in Current Report
 
 ### 1. Static Analysis Error Density
 
@@ -255,15 +349,19 @@ Symfony:      14.617  ← Contains very complex code
 ### For Framework Comparison
 
 **DO use:**
-1. ✅ Static analysis error density (errors/1K LOC)
-2. ✅ Maximum cognitive complexity
-3. ✅ Suppression and baseline counts
-4. ✅ Type coverage (when available)
+1. ✅ Static analysis error density (errors/1K LOC) - Most reliable
+2. ✅ Suppression and baseline counts - Shows technical debt
+3. ✅ Type coverage (when available) - Would be most important
 
-**DO NOT use:**
-1. ❌ Average method length
-2. ❌ Average cognitive complexity
-3. ❌ Complexity/LLOC as standalone
+**USE WITH EXTREME CAUTION:**
+1. ⚠️ Maximum cognitive complexity - Check if it's an outlier or systemic
+2. ⚠️ Average metrics - Only with distribution data
+
+**DO NOT use alone:**
+1. ❌ Average method length - Meaningless without distribution
+2. ❌ Average cognitive complexity - Meaningless without distribution
+3. ❌ Maximum values - Meaningless without context (percentiles)
+4. ❌ Complexity/LLOC - Too easily distorted
 
 **Better alternatives:**
 - Percentile distributions (P50, P75, P90, P95, P99)
