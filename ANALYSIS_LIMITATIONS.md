@@ -75,9 +75,13 @@ public function parseKey(array $config) {
 
 ### What You Should Look At Instead
 
-- **Maximum method length**: Reveals the most complex method
-- **Method length distribution**: P50, P75, P90, P95 percentiles
-- **Cognitive complexity** (but see Problem 2)
+⚠️ **No single metric is reliable.** All alternatives have their own problems:
+
+- **Maximum method length** → Single outlier effect (see Problem 4)
+- **Method length distribution (P50-P95)** → Still distorted by mass of simple code
+- **Cognitive complexity** → Same issue (see Problem 2)
+
+**The only solution**: Bucket distribution (count of methods in each length range)
 
 ---
 
@@ -320,15 +324,17 @@ Laravel:     48.60  ← Problematic
 
 **Caveat**: Different tools show different results (PHPStan vs Psalm)
 
-### 2. Maximum Cognitive Complexity
+### 2. Maximum Cognitive Complexity (with caveats)
 
-Shows the **worst-case scenario** - most difficult code to maintain.
+Shows the **worst-case scenario** - but may be just one outlier (see Problem 4).
 
 ```
-BEAR.Sunday:   3.243  ← Consistently simple
+BEAR.Sunday:   3.243  ← Consistently simple (low max = no outliers)
 Laravel:       7.233
-Symfony:      14.617  ← Contains very complex code
+Symfony:      14.617  ← Could be 1 outlier or systemic issue
 ```
+
+⚠️ **Low maximum is meaningful** (no complex code exists), but **high maximum alone is inconclusive** (need bucket distribution to know if systemic).
 
 ### 3. Suppression Count (Technical Debt)
 
