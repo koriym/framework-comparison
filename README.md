@@ -81,6 +81,8 @@ To switch between dev/stable branches, edit `config.php` and delete the `repos/`
 
 See **[reports/README.md](reports/README.md)** for the latest comparison table.
 
+**⚠️ Important**: See **[ANALYSIS_LIMITATIONS.md](ANALYSIS_LIMITATIONS.md)** for critical limitations of these metrics and why average-based measurements can be misleading.
+
 Note: The results are not interpreted here, only displayed as raw data so far.
 
 ## Out of Scope
